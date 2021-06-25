@@ -26,13 +26,13 @@ namespace Slotkin_P2
             //call GetMolecularWeights()
             Program.GetMolecularWeights(ref gasNames, ref mainMolecularWeights, out countGases);
 
-            //call DisplayGasNames()
-            Program.DisplayGasNames(gasNames, countGases);
-
             //use a do while loop
             string answer = "y";
             do
             {
+                //call DisplayGasNames()
+                Program.DisplayGasNames(gasNames, countGases);
+
                 //ask the user the name of the gas
                 Console.WriteLine("\n\nSelect the gas you would like to calculate the pressure it exerts in");
                 Console.WriteLine("a given container under certain conditions: ");
@@ -79,6 +79,7 @@ namespace Slotkin_P2
                     answer = Console.ReadLine();
                 }
             } while (answer == "y");
+              //while (answer == String.Equals("y")) ;
 
             //say goodbye
             Console.WriteLine("\nPhwew, I was getting tired of doing calculations!");
@@ -87,9 +88,9 @@ namespace Slotkin_P2
             Console.ReadLine(); //so the program waits for an entry before quitting
         }
 
-/// <summary>
-/// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// </summary>
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         static void DisplayHeader()
         {
@@ -111,9 +112,9 @@ namespace Slotkin_P2
                 //split the line on the comma
                 string[] lineSplit = line.Split(',');
                 //names of the gases as an array of strings
-                gasNames[i] = lineSplit[0];
+                gasNames[i-1] = lineSplit[0];
                 //molecularWeights changed into an array of doubles 
-                molecularWeights[i] = Convert.ToDouble(lineSplit[1]);
+                molecularWeights[i-1] = Convert.ToDouble(lineSplit[1]);
                 //get count of elements in the array 
                 countGases = linesInFile.Length - 1;
             }
