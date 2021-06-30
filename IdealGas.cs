@@ -17,8 +17,6 @@ namespace Slotkin_P2
         private double temperature;
         private double molecularWeight;
         private double pascals;
-        private double moles;
-        private double kelvin;
 
         public IdealGas()
         {
@@ -69,19 +67,22 @@ namespace Slotkin_P2
         {
             const double R = 8.3145; //measured in m3
             //calculate and return pressure in pascals using (P = nRT/V):
+            double moles = NumberOfMoles(mass, molecularWeight);
+            double kelvin = CelsiusToKelvin(temperature);
             this.pascals = (moles * R * kelvin) / volume;
         }
 
-        private double NumberOfMoles()
+        private double NumberOfMoles(double mass, double molecularWeight)
         {
-            moles = mass / molecularWeight;
-            return this.moles;
+            //calculate and return moles using mass/molecularWeight)
+            double moles = mass / molecularWeight;
+            return moles;
         }
 
-        private double CelsiusToKelvin()
+        private double CelsiusToKelvin(double temperature)  
         {
-            kelvin = temperature + 273.15;
-            return this.kelvin;
+            double kelvin = temperature + 273.15;
+            return kelvin;
         }
     }
 }

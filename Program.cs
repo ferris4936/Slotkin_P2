@@ -14,72 +14,86 @@ namespace Slotkin_P2
         static void Main(string[] args)
         { 
             string[] gasNames = new string[200];
-            double[] mainMolecularWeights = new double[200];
+            double[] molecularWeights = new double[200];
             int countGases = 0;  //to keep track of the # of gases in the array
-            double molecularWeight = 0;
             double pascals = 0;
-            string gasName;
+            double molecularWeight = 0;
 
             //DisplayHeader()
             Program.DisplayHeader();
 
             //call GetMolecularWeights()
-            Program.GetMolecularWeights(ref gasNames, ref mainMolecularWeights, out countGases);
+            Program.GetMolecularWeights(ref gasNames, ref molecularWeights, out countGases);
 
             //use a do while loop
             string answer = "y";
             do
             {
-                //call DisplayGasNames()
-                Program.DisplayGasNames(gasNames, countGases);
-
-                //ask the user the name of the gas
-                Console.WriteLine("\n\nSelect the gas you would like to calculate the pressure it exerts in");
-                Console.WriteLine("a given container under certain conditions: ");
-                gasName = Console.ReadLine();
-
-                //call GetMolecularWeightFromName()
-                molecularWeight = Program.GetMolecularWeightFromName(gasName, gasNames, mainMolecularWeights, countGases);
-
-                //if gas not found (aka, molecularWeight of -1), display an error message
-                if (molecularWeight == -1)
+                try
                 {
-                    Console.WriteLine("\nERROR! You have made an invalid selection.");
+                    //call DisplayGasNames()
+                    Program.DisplayGasNames(gasNames, countGases);
+
+                    //ask the user the name of the gas
+                    Console.WriteLine("\n\nPlease select the gas you would like to calculate the pressure it exerts in");
+                    Console.WriteLine("a given container under certain conditions (Note: your selection needs to be entered");
+                    Console.WriteLine("identical to above): ");
+                    string gasName = Console.ReadLine();
+
+                    //call GetMolecularWeightFromName()
+                    molecularWeight = Program.GetMolecularWeightFromName(gasName, gasNames, molecularWeights, countGases);
+
+                    //if gas not found(aka, molecularWeight of -1), display an error message
+                    if (molecularWeight == -1)
+                    {
+                        Console.WriteLine("\nERROR! Selection needs to be entered identical to above.");
+                    }
+                    else
+                    {
+                        IdealGas gas = new IdealGas();
+                        //ask the user for the volume of the gas in cubic meters
+                        Console.WriteLine("In digit format, please enter the volume in cubic meters: ");
+                        string volTemp = Console.ReadLine();
+                        double vol = Convert.ToDouble(volTemp);
+
+                        //ask the user for the mass of the gas in grams
+                        Console.WriteLine("In digit format, please enter the mass in grams: ");
+                        string massTemp = Console.ReadLine();
+                        double mass = Convert.ToDouble(massTemp);
+
+                        //ask the user for the temperature in celsius
+                        Console.WriteLine("In digit format, please enter the temperature in degree celsius: ");
+                        string tempTemp = Console.ReadLine();
+                        double temp = Convert.ToDouble(tempTemp);
+
+                        gas.SetMass(mass);
+                        gas.SetMolecularWeight(molecularWeight);
+                        gas.SetTemp(temp);
+                        gas.SetVolume(vol);
+
+                        pascals = gas.GetPressure();
+
+                        ////call DisplayPressure()
+                        Program.DisplayPressure(pascals, gasName);
+                    }
                 }
-                else
+                catch (System.FormatException)
                 {
-                    IdealGas gas = new IdealGas(); 
-                    //ask the user for the volume of the gas in cubic meters
-                    Console.WriteLine("Please enter the volume in cubic meters: ");
-                    string volTemp = Console.ReadLine();
-                    double vol = Convert.ToDouble(volTemp);
-
-                    //ask the user for the mass of the gas in grams
-                    Console.WriteLine("Please enter the mass in grams: ");
-                    string massTemp = Console.ReadLine();
-                    double mass = Convert.ToDouble(massTemp);
-
-                    //ask the user for the temperature in celsius
-                    Console.WriteLine("Please enter the temperature in celsius: ");
-                    string tempTemp = Console.ReadLine();
-                    double temp = Convert.ToDouble(tempTemp);
-
-                    gas.SetMass(mass);
-                    gas.SetMolecularWeight(molecularWeight);
-                    gas.SetTemp(temp);
-                    gas.SetVolume(vol);
-
-                    pascals = gas.GetPressure();
-
-                    ////call DisplayPressure()
-                    Program.DisplayPressure(pascals, gasName);
-
-                    //ask the user if they want to do another
-                    Console.WriteLine("\nWould you like to do another? y/n");
-                    answer = Console.ReadLine();
+                    Console.WriteLine("ERROR!  Please enter your answer in the proper format.");
                 }
-            } while (answer == "y");
-              //while (answer == String.Equals("y")) ;
+                catch (System.OverflowException)
+                {
+                    Console.WriteLine("ERROR!  There is an OVERFLOW EXCEPTION somewhere.");
+                }
+                catch (Exception exc)
+                { 
+                    Console.WriteLine("ERROR! " + exc.Message + "\nException type: " + exc.GetType());
+                }
+
+                //ask the user if they want to do another
+                Console.WriteLine("\nWould you like to do another? y/n");
+                answer = Console.ReadLine();
+            } while (answer.Equals("y"));
 
             //say goodbye
             Console.WriteLine("\nPhwew, I was getting tired of doing calculations!");
@@ -112,9 +126,9 @@ namespace Slotkin_P2
                 //split the line on the comma
                 string[] lineSplit = line.Split(',');
                 //names of the gases as an array of strings
-                gasNames[i-1] = lineSplit[0];
+                gasNames[i] = lineSplit[0];
                 //molecularWeights changed into an array of doubles 
-                molecularWeights[i-1] = Convert.ToDouble(lineSplit[1]);
+                molecularWeights[i] = Convert.ToDouble(lineSplit[1]);
                 //get count of elements in the array 
                 countGases = linesInFile.Length - 1;
             }
@@ -123,7 +137,7 @@ namespace Slotkin_P2
         private static void DisplayGasNames(string[] gasNames, int countGases)
         {
             //display the gasNames[] to the user in 3 columns
-            for (int i = 1; i < countGases; i++)
+            for (int i = 1; i <= countGases; i++)
             {
                 Console.Write("{0, -20}", gasNames[i]);
 
@@ -138,20 +152,16 @@ namespace Slotkin_P2
         {
             double molecularWeight;
             //gets and returns the molecular weight of the gas selected by the user
-            for (int i = 0; i < countGases; i++)
+            for (int i = 1; i <= countGases; i++)
             {
                 if (String.Equals(gasName, gasNames[i]) == true)
                 {
                     //return molecularWeights[i] parallel/= to gasNames[i]
                     molecularWeight = molecularWeights[i];
-                    return molecularWeight;
-                }
-                else
-                {
-                    molecularWeight = -1;
+                    return molecularWeight; 
                 }
             }
-            return molecularWeight = -1;
+            return -1;      
         }
 
         private static void DisplayPressure(double pascals, string gasName)  
